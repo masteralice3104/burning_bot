@@ -1,8 +1,12 @@
 //最低限のデータセット
 //json書込・読込
-const DEFAULT_DATA_PATH = __dirname + `/../burning_bot_data/`;
+const DEFAULT_DATA_PATH = __dirname + `/../../burning_bot_data/`;
 
-exports.min = class Burn_minimum {
+//fs-extra
+const fs = require('fs-extra');
+
+
+class Burn_minimum {
     constructor() {
 
         //サーバー情報取得
@@ -17,16 +21,16 @@ exports.min = class Burn_minimum {
 
     }
 
-    static json_read_default(jsonname, array) {
+
+    //Json読み書き
+    json_read_default(jsonname, array, path = DEFAULT_DATA_PATH) {
         try {
-            array = JSON.parse(fs.readFileSync(DEFAULT_DATA_PATH + jsonname, 'utf8'));
+            array = JSON.parse(fs.readFileSync(path + jsonname, 'utf8'));
         } catch (e) {
             console.log(e.message);
         }
         return array; //参照渡しできない連想配列用
     };
-
-    //Json読み書き
     json_write(jsonname, array) {
         try {
             fs.writeFileSync(DEFAULT_DATA_PATH + this.id + `/` + jsonname, JSON.stringify(array));
@@ -42,7 +46,7 @@ exports.min = class Burn_minimum {
             folder = `default`;
         }
         try {
-            array = JSON.parse(fs.readFileSync(DEFAULT_DATA_PATH + folder + `/` + jsonname, 'utf8'));
+            array = this.json_read_default(jsonname, array, DEFAULT_DATA_PATH + folder)
         } catch (e) {
             console.log(e.message);
         }
@@ -99,3 +103,30 @@ exports.min = class Burn_minimum {
             .catch(console.error);
     }
 }
+exports.Burn_minimum = Burn_minimum;
+
+
+exports.Burn_DirExistCheck = function Burn_DirExistCheck(guild) {
+
+    //設定ファイル関係がなかったら困るので
+    const DEFAULT_PATH = DEFAULT_DATA_PATH + `default` + `/`;
+
+    let NOW_ID_PATH = ``;
+    try {
+        NOW_ID_PATH = DEFAULT_DATA_PATH + guild.id + `/`;
+        console.log("ギルドIDモード")
+    } catch (e) {
+        NOW_ID_PATH = DEFAULT_DATA_PATH + channel.id + `/`;
+        console.log("チャンネルIDモード")
+    }
+    if (fs.existsSync(NOW_ID_PATH)) {
+        //存在するのでそのまま
+        console.log(`ディレクトリ：${NOW_ID_PATH}を検出！`)
+    } else {
+        console.log(`ディレクトリ：${NOW_ID_PATH}は存在しません`);
+
+        fs.copySync(DEFAULT_PATH, NOW_ID_PATH);
+        console.log(`ディレクトリ：${NOW_ID_PATH}が作成されました`);
+    }
+
+};

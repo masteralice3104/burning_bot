@@ -17,20 +17,41 @@ Discord.js@devになっていますが、v13リリースのあとは置き換え
 
 
 //おまじない
-const Discord = require('discord.js@dev'); // discord.js モジュールのインポート
-const Burn_min = require("./burn/min.js")
-let Burn_minimum = new Burn_min().min;
+const { Intents, Client } = require('discord.js'); // discord.js モジュールのインポート
+
+//外部に出した関数
+const Burn_min = require("./burn/min.js");
+let Burn_minimum = new Burn_min.Burn_minimum();
+const Burn_role = require("./burn/role.js");
+
+
 
 // Discord Clientのインスタンス作成
-const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES] });
+const options = {
+    intents: Intents.FLAGS.GUILDS |
+        Intents.FLAGS.GUILD_MEMBERS |
+        Intents.FLAGS.GUILD_BANS |
+        Intents.FLAGS.GUILD_EMOJIS |
+        Intents.FLAGS.GUILD_INTEGRATIONS |
+        Intents.FLAGS.GUILD_WEBHOOKS |
+        Intents.FLAGS.GUILD_INVITES |
+        Intents.FLAGS.GUILD_VOICE_STATES |
+        Intents.FLAGS.GUILD_PRESENCES |
+        Intents.FLAGS.GUILD_MESSAGES |
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS |
+        Intents.FLAGS.GUILD_MESSAGE_TYPING |
+        Intents.FLAGS.DIRECT_MESSAGES |
+        Intents.FLAGS.DIRECT_MESSAGE_REACTIONS |
+        Intents.FLAGS.DIRECT_MESSAGE_TYPING,
+};
+const client = new Client(options);
 
-//fs-extra
-const fs = require('fs-extra');
+
 
 
 //setting.json読込(連想配列)
 let setting_array = {};
-setting_array = Burn_minimum.json_defalt_read(`discord.json`, setting_array); //参照渡しできないため
+setting_array = Burn_minimum.json_read_default(`discord.json`, setting_array); //参照渡しできないため
 
 // トークンの用意
 const discord_token = setting_array[`discord_token`];
@@ -46,26 +67,9 @@ client.on('ready', () => { // 準備完了イベントのconsole.logで通知黒
 
 
 client.on("voiceStateUpdate", (oldState, newState) => { //voicestateupdate
-    if (newState && oldState) {
-        //Amana_minimumで作る
-        //実処理ここから
-        if (oldState.channelID === newState.channelID) {
-            //ここはミュートなどの動作を行ったときに発火する場所
+    Burn_min.Burn_DirExistCheck(oldState.guild);
 
-        }
-        if (oldState.channelID === null && newState.channelID != null) {
-            //ここはconnectしたときに発火する場所
-            console.log(`connect`);
-
-        }
-        if (oldState.channelID != null && newState.channelID === null) {
-            //ここはdisconnectしたときに発火する場所
-            console.log(`disconnect`);
-
-        }
-
-    }
-
+    Burn_role.VC_Role_Interlocking(oldState, newState, "VC_in");
 });
 
 

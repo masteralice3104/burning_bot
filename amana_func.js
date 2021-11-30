@@ -8,12 +8,16 @@ class Amana_minimum {
     constructor() {
         //サーバー情報取得
         this.id = 0; //鯖ID
+        this.channelid = 0; //出力先チャンネルID
+
         //サーバー設定
         this.setting = {}; //設定は連想配列
 
         //名前配列関係
         this.name_touroku = {}; //名前置換テーブル(連想配列)
 
+        //client取得
+        this.client;
 
     }
 
@@ -83,6 +87,9 @@ class Amana_minimum {
         }
         return name_string;
     };
+    ClientInit(client) {
+        this.client = client;
+    }
 }
 
 
@@ -92,7 +99,7 @@ Amana_tenko_start = function(message, Amana_data, Amana) {
             //一致時
             let author = message.author.username;
 
-            Amana_data.message_react();
+            message_react(message);
             Amana_data.message_send(`甘奈が数えるよ～☆`)
 
             //ツイート
@@ -239,12 +246,36 @@ Amana_hat_start = function(client, channelid, Amana_data, Amana) {
 
 };
 
+Amana_count_in = function(message, Amana_data) {
+
+    for (let i = 0; i < Amana_data.setting["tenko_count"].length; i++) {
+        if (message.content === Amana_data.setting["tenko_count"][i]) {
+            //一致時
+            const author = message.author.username;
+            const mes_id = message.author.id;
+            message_react(message);
+
+            Amana_data.tenko_count(mes_id);
+            console.log(`ネーム配列　に　${mes_id} : ${author}を追加しました`);
+
+            return;
+        }
+    }
+}
+
+
 function Channel_send_in(client, channelid, message) {
     client.channels.cache.get(channelid).send(message)
         .then(message => console.log(`${channelid} : 甘奈「${message}」`))
         .catch(console.error);
 }
 
+function message_react(message) {
+
+    message.react('⭐')
+        .then(message => console.log(`甘奈確認！`))
+        .catch(console.error);
+}
 
 module.exports = {
     Amana_minimum: Amana_minimum,
@@ -255,7 +286,10 @@ module.exports = {
         Amana_hat_start(client, channelid, Amana_data, Amana);
     },
     Channel_send: function(client, channelid, message) {
-        Channel_send_in(client, channelid, message)
+        Channel_send_in(client, channelid, message);
+    },
+    Amana_count: function(message, Amana_data) {
+        Amana_count_in(message, Amana_data);
     }
 
 }

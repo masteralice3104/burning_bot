@@ -22,14 +22,7 @@ require('date-utils');
 
 
 
-function json_defalt_read(jsonname, array) {
-    try {
-        array = JSON.parse(fse.readFileSync(DEFAULT_DATA_PATH + jsonname, 'utf8'));
-    } catch (e) {
-        console.log(e.message);
-    }
-    return array; //参照渡しできない連想配列用
-};
+
 
 //require
 const Amana_minimum = require('./amana_func').Amana_minimum;
@@ -40,7 +33,7 @@ const amana_func = require('./amana_func');
 
 //setting.json読込(連想配列)
 let setting_array = {};
-setting_array = json_defalt_read(`discord.json`, setting_array); //参照渡しできないため
+setting_array = Amana_func.json_default_read(`discord.json`, setting_array); //参照渡しできないため
 
 
 
@@ -50,37 +43,6 @@ const discord_clientid = setting_array[`discord_clientid`];
 const test_guildid = setting_array[`test_guildid`];
 
 client.on('ready', () => {
-
-    //スラッシュコマンドデバッグ用
-
-    const commands = [
-            new SlashCommandBuilder()
-            .setName(`amana`)
-            .setDescription('甘奈がお手伝いするね！')
-            .addStringOption(option =>
-                option.setName('コマンド')
-                .setDescription('何をすればいいかな？')
-                .setRequired(true)
-                .addChoice('tenko', 'tenko')
-                .addChoice('hat', 'hat')
-                .addChoice('delete', 'delete')
-                .addChoice('list', 'list')
-            ),
-
-
-            new SlashCommandBuilder()
-            .setName(`hayate_perfect`)
-            .setDescription('久川颯「パーフェクト！」')
-        ]
-        .map(command => command.toJSON());
-
-    const rest = new REST({ version: '9' }).setToken(discord_token);
-
-    rest.put(Routes.applicationGuildCommands(discord_clientid, test_guildid), { body: commands })
-        .then(() => console.log('Successfully registered application commands.'))
-        .catch(console.error); //指定したサーバーにコマンドを登録・更新
-    //ここまでスラッシュコマンドデバッグ用
-
 
     console.log('甘奈ちゃんが待機し始めました');
     client.user.setActivity('甜花ちゃんの寝顔', { type: 'WATCHING' });

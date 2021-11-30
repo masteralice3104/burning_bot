@@ -1,11 +1,25 @@
+const { Client, Intents } = require('discord.js'); //discordjs v13を読み込む
+const { SlashCommandBuilder } = require('@discordjs/builders'); //SlashCommandBuilderを読み込む
+const { REST } = require('@discordjs/rest'); //RESTを読み込む
+const { Routes } = require('discord-api-types/v9'); //Routesを読み込む
+
 const fse = require('fs-extra');
 const DEFAULT_DATA_PATH = __dirname + `/../burning_bot_data/`;
 require('date-utils');
 
 //require
 const Amana_minimum = require('./amana_func').Amana_minimum;
-const Amana_tenko = require('./amana_func').Amana_tenko;
 const Amana_func = require('./amana_func');
+
+
+//setting.json読込(連想配列)
+let setting_array = {};
+setting_array = Amana_func.json_default_read(`discord.json`, setting_array); //参照渡しできないため
+
+// トークンの用意
+const discord_token = setting_array[`discord_token`];
+const discord_clientid = setting_array[`discord_clientid`];
+const test_guildid = setting_array[`test_guildid`];
 
 
 //ここからクラス
@@ -400,6 +414,8 @@ class Amana extends Amana_minimum {
         this.ServerMemoArrayLoad();
         this.ServerOtherCommandLoad();
         this.OtherCommand_DataLoad();
+
+        this.ServerCommandLoad();
     }
 
     //サーバー設定関係
@@ -409,6 +425,39 @@ class Amana extends Amana_minimum {
             this.channelid = channelid;
         }
     };
+    ServerCommandLoad() {
+
+        //スラッシュコマンドデバッグ用
+        const commands = [
+                new SlashCommandBuilder()
+                .setName(`amana`)
+                .setDescription('甘奈がお手伝いするね！')
+                .addStringOption(option =>
+                    option.setName('コマンド')
+                    .setDescription('何をすればいいかな？')
+                    .setRequired(true)
+                    .addChoice('tenko', 'tenko')
+                    .addChoice('hat', 'hat')
+                    .addChoice('delete', 'delete')
+                    .addChoice('list', 'list')
+                ),
+
+
+                new SlashCommandBuilder()
+                .setName(`hayate_perfect`)
+                .setDescription('久川颯「パーフェクト！」')
+            ]
+            .map(command => command.toJSON());
+
+        const rest = new REST({ version: '9' }).setToken(discord_token);
+
+        rest.put(Routes.applicationGuildCommands(discord_clientid, this.id), { body: commands })
+            .then(() => console.log('コマンドの登録に成功したよ！'))
+            .catch(console.error); //指定したサーバーにコマンドを登録・更新
+        //ここまでスラッシュコマンドデバッグ用
+
+
+    }
     ServerSettingSave() { //サーバー設定書き込み
         this.json_write(`setting.json`, this.setting);
     }

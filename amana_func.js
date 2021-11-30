@@ -313,6 +313,14 @@ module.exports = {
     },
     Amana_list: function(Amana_data) {
         return Amana_list_in(Amana_data);
+    },
+    json_default_read: function(jsonname, array) {
+        try {
+            array = JSON.parse(fse.readFileSync(DEFAULT_DATA_PATH + jsonname, 'utf8'));
+        } catch (e) {
+            console.log(e.message);
+        }
+        return array; //参照渡しできない連想配列用
     }
 
 }

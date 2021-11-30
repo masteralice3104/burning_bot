@@ -61,7 +61,8 @@ class Amana extends Amana_minimum {
         for (let line of lines) {
             reply_text += line;
         }
-        this.message_send(reply_text); //メッセージ送信
+        //this.message_send(reply_text); //メッセージ送信しなくなった
+        return reply_text;
     }
 
     //チャンネルに送る

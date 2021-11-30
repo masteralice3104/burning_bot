@@ -262,6 +262,26 @@ Amana_count_in = function(message, Amana_data) {
         }
     }
 }
+Amana_list_in = function(Amana_data) {
+
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //  点呼表示　　                                             //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
+    let reply_text = `参加者一覧の表示をするよ！\n`;
+    if (Amana_data.name_array.length == 0) {
+        reply_text += `……いないよ！\n`;
+    } else {
+        reply_text += `${Amana_data.name_array.length}人いるよ！\n`;
+
+        for (let i = 0; i < Amana_data.name_array.length; i++) {
+            reply_text += `${Amana_data.omittedContent(Amana_data.name_array[i])}　`;
+        }
+    }
+    return reply_text;
+
+}
 
 
 function Channel_send_in(client, channelid, message) {
@@ -290,6 +310,9 @@ module.exports = {
     },
     Amana_count: function(message, Amana_data) {
         Amana_count_in(message, Amana_data);
+    },
+    Amana_list: function(Amana_data) {
+        return Amana_list_in(Amana_data);
     }
 
 }

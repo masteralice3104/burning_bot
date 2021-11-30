@@ -63,7 +63,9 @@ client.on('ready', () => {
                 .setRequired(true)
                 .addChoice('tenko', 'tenko')
                 .addChoice('hat', 'hat')
-                .addChoice('delete', 'delete')),
+                .addChoice('delete', 'delete')
+                .addChoice('list', 'list')
+            ),
 
 
             new SlashCommandBuilder()
@@ -89,7 +91,45 @@ client.on('ready', () => {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
 
-    const channelid = interaction.channel.id;
+    //必要な関数
+    //guildのid取得
+    let guildid, chid
+    try {
+        guildid = interaction.guild.id;
+        chid = interaction.channel.id;
+    } catch (e) {
+        guildid = interaction.channel.id; //DMとかのやつのために
+        chid = interaction.channel.id; //DMとかのやつのために
+    }
+
+    //設定ファイル関係がなかったら困るので
+    const DEFAULT_PATH = DEFAULT_DATA_PATH + `default` + `/`;
+    let NOW_ID_PATH = ``;
+    try {
+        NOW_ID_PATH = DEFAULT_DATA_PATH + guildid + `/`;
+        console.log("ギルドIDモード")
+    } catch (e) {
+        NOW_ID_PATH = DEFAULT_DATA_PATH + chid + `/`;
+        console.log("チャンネルIDモード")
+    }
+    if (fse.existsSync(NOW_ID_PATH)) {
+        //存在するのでそのまま
+        console.log(`ディレクトリ：${NOW_ID_PATH}を検出！`)
+    } else {
+        console.log(`ディレクトリ：${NOW_ID_PATH}は存在しません`);
+
+        fse.copySync(DEFAULT_PATH, NOW_ID_PATH);
+        console.log(`ディレクトリ：${NOW_ID_PATH}が作成されました`);
+    }
+
+    //甘奈クラス
+    let Amana_data = new Amana;
+
+    //初期化
+    Amana_data.ServerInit(client, guildid, chid);
+
+
+
 
     const { commandName } = interaction;
 
@@ -104,10 +144,15 @@ client.on('interactionCreate', async interaction => {
         }
         if (interaction.options.getString("コマンド") === 'hat') {
             await interaction.reply('組分けだね！わかった！');
+            Amana_func.Amana_hat(client, chid, Amana_data, Amana);
 
         }
         if (interaction.options.getString("コマンド") === 'delete') {
             await interaction.reply(`点呼データをリセットしたよ！`);
+            Amana_data.tenko_reset();
+        }
+        if (interaction.options.getString("コマンド") === 'list') {
+            await interaction.reply(Amana_func.Amana_list(Amana_data));
         }
 
     }
@@ -189,7 +234,6 @@ client.on('messageCreate', message => {
 
             //配列に分割
             let instr = message.content.split(/\s/);
-            let instr_full = message.content;
 
             //////////////////////////////////////////////////////////////
             //                                                          //
@@ -309,14 +353,6 @@ client.on('messageCreate', message => {
 
 
 
-            if ((instr[0] === `組分けだね！わかった！`) && message.author.bot == true) {
-                Amana_func.Amana_hat(client, channelid, Amana_data, Amana);
-            }
-            if ((instr[0] === `点呼データをリセットしたよ！`) && message.author.bot == true) {
-                //配列を空にする
-                Amana_data.tenko_reset();
-
-            }
 
             if (instr[0] === `/amana`) {
 
@@ -368,25 +404,7 @@ client.on('messageCreate', message => {
                 }
 
 
-                //////////////////////////////////////////////////////////////
-                //                                                          //
-                //  点呼表示　　                                             //
-                //                                                          //
-                //////////////////////////////////////////////////////////////
-                if (instr[1] === `list` && instr.length > 1) {
-                    let reply_text = `参加者一覧の表示をするよ！\n`;
-                    Amana_data.message_send(reply_text);
-                    if (Amana_data.name_array.length == 0) {
-                        reply_text = `……いないよ！\n`;
-                    } else {
-                        reply_text = `${Amana_data.name_array.length}人いるよ！\n`;
-                    }
-                    for (let i = 0; i < Amana_data.name_array.length; i++) {
-                        reply_text += `${Amana_data.omittedContent(Amana_data.name_array[i])}　`;
-                    }
-                    Amana_data.message_send(reply_text);
 
-                }
                 //////////////////////////////////////////////////////////////
                 //                                                          //
                 //  名前置換テーブル操作関係                                  //

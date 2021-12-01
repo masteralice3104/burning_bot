@@ -19,8 +19,6 @@ setting_array = Amana_func.json_default_read(`discord.json`, setting_array); //�
 // トークンの用意
 const discord_token = setting_array[`discord_token`];
 const discord_clientid = setting_array[`discord_clientid`];
-const test_guildid = setting_array[`test_guildid`];
-
 
 //ここからクラス
 class Amana extends Amana_minimum {
@@ -427,19 +425,65 @@ class Amana extends Amana_minimum {
     };
     ServerCommandLoad() {
 
-        //スラッシュコマンドデバッグ用
+        //スラッシュコマンド用
         const commands = [
                 new SlashCommandBuilder()
                 .setName(`amana`)
                 .setDescription('甘奈がお手伝いするね！')
-                .addStringOption(option =>
-                    option.setName('コマンド')
-                    .setDescription('何をすればいいかな？')
-                    .setRequired(true)
-                    .addChoice('tenko', 'tenko')
-                    .addChoice('hat', 'hat')
-                    .addChoice('delete', 'delete')
-                    .addChoice('list', 'list')
+                .addSubcommand(subcommand =>
+                    subcommand
+                    .setName('tenko')
+                    .setDescription('点呼するよ！')
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
+                    .setName('hat')
+                    .setDescription('組分けするよ！')
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
+                    .setName('delete')
+                    .setDescription('組分けデータを削除するよ！')
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
+                    .setName('list')
+                    .setDescription('点呼済みの人を一覧表示するよ！')
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
+                    .setName('mode')
+                    .setDescription('組分けのモードを切り替えるよ！')
+                    .addStringOption(option =>
+                        option.setName('option1')
+                        .setDescription('3人組優先か4人組優先かを選んでね！')
+                        .setRequired(true)
+                        .addChoice('3', '3')
+                        .addChoice('4', '4')
+                    )
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
+                    .setName('nameadd')
+                    .setDescription('甘奈にプロデューサーさんの名前を教えて！')
+
+                    .addStringOption(option =>
+                        option.setName('name')
+                        .setRequired(true)
+                        .setDescription('登録する名前を教えてね！')
+                    )
+
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
+                    .setName('namedel')
+                    .setDescription('甘奈が覚えている名前の代わりにデフォルト名を使うよ！')
+                )
+
+                .addSubcommand(subcommand =>
+                    subcommand
+                    .setName('version')
+                    .setDescription('バージョンを確認するよ！')
                 ),
 
 
@@ -454,7 +498,7 @@ class Amana extends Amana_minimum {
         rest.put(Routes.applicationGuildCommands(discord_clientid, this.id), { body: commands })
             .then(() => console.log('コマンドの登録に成功したよ！'))
             .catch(console.error); //指定したサーバーにコマンドを登録・更新
-        //ここまでスラッシュコマンドデバッグ用
+        //ここまでスラッシュコマンド用
 
 
     }

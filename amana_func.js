@@ -297,6 +297,66 @@ function message_react(message) {
         .catch(console.error);
 }
 
+function kumi_mode_change_in(Amana_data, mode) {
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //  組分けモード切替　　　　　                                 //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
+    let reply_text = ``;
+    let mode_num = Number(mode) - 3;
+    if (mode_num == 0 | mode_num == 1) {
+        Amana_data.kumi_mode_change(mode_num);
+    } else {
+        reply_text = `入力が変だよ！`;
+        return reply_text;
+    }
+
+
+    let sum = Amana_data.kumi_mode_call() + 3;
+    if (sum == 3 | sum == 4) {
+        reply_text = `組分けのとき${sum}人を優先するよ！`;
+        console.log(`kumi_mode：${Amana_data.kumi_mode_call()}`);
+    }
+    return reply_text;
+}
+
+function name_table_add(Amana_data, Name, author_name) {
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //  名前置換テーブル操作関係add                                  //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
+
+
+    let reply_text = ``;
+    if (Name === ``) {
+        reply_text = '名前の入力がないよ！';
+        return reply_text;
+    }
+    //名前置換ルール追加
+    Amana_data.name_touroku[`${author_name}`] = Name; //配列への追加
+    reply_text = `置換ルール：${author_name} → ${Name} を登録したよ！`;
+    //処理
+    Amana_data.ServerNameSave();
+    return reply_text;
+}
+
+function name_table_del(Amana_data, author_name) {
+    //////////////////////////////////////////////////////////////
+    //                                                          //
+    //  名前置換テーブル操作関係del                                  //
+    //                                                          //
+    //////////////////////////////////////////////////////////////
+
+
+    //名前置換ルール削除
+    let reply_text = `置換ルール：${author_name} → ${ Amana_data.name_touroku[`${author_name}`]} を削除したよ！`;
+        
+    delete  Amana_data.name_touroku[`${author_name}`];//配列からの削除
+    Amana_data.ServerNameSave();
+    return reply_text;
+}
 module.exports = {
     Amana_minimum: Amana_minimum,
     Amana_tenko: function(message, Amana_data, Amana) {
@@ -321,6 +381,22 @@ module.exports = {
             console.log(e.message);
         }
         return array; //参照渡しできない連想配列用
+    },
+    Amana_version: function() { //バージョン確認関数
+        let stats = fse.statSync("./bot_main.js");
+        let reply_text = ``;
+        reply_text = '更新日：' + stats.mtime
+        return reply_text;
+    },
+    kumi_mode_change: function(Amana_data, mode) {
+        return kumi_mode_change_in(Amana_data, mode);
+    },
+    name_table_change:function(Amana_data, Mode, Name , author_name){
+        if (Mode === `add`) {
+            return name_table_add(Amana_data, Name, author_name);
+        }
+        if (Mode === `delete`) {
+            return name_table_del(Amana_data, author_name);
+        }
     }
-
 }

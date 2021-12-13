@@ -158,10 +158,6 @@ client.on('messageCreate', message => {
         console.log(`ディレクトリ：${NOW_ID_PATH}が作成されました`);
     }
 
-    //共通変数
-    let channelid = message.channel.id;
-
-
     //甘奈クラス
     let Amana_data = new Amana;
 
@@ -187,7 +183,7 @@ client.on('messageCreate', message => {
     //計数
     Amana_func.Amana_count(message, Amana_data);
 
-    //ダブリ削除
+    //組分けから排除
     for (let i = 0; i < Amana_data.setting["tenko_delete"].length; i++) {
         if (message.content === Amana_data.setting["tenko_delete"][i]) {
             //一致時
@@ -198,7 +194,6 @@ client.on('messageCreate', message => {
             Amana_data.message_send(`組分けから ${author} を削除したよ☆`);
 
             Amana_data.tenko_double_delete(mes_id);
-            Amana_data.tenko_count(mes_id);
             console.log(`ネーム配列から${author}のダブリを排除しました`);
             return;
         }

@@ -130,6 +130,11 @@ client.on('interactionCreate', async interaction => {
         }
 
     }
+
+    const instr = { commandName };
+
+
+
 });
 
 // メッセージがあったら何かをする

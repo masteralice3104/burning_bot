@@ -326,8 +326,6 @@ class Amana extends Amana_minimum {
     }
     OtherCommand_Replace(str) {
         const replace_array = [
-            ["{onid}", this.omittedContent(message.author.id)],
-            ["{author_id}", message.author.id],
             ["{now_hour}", Amana.TimeFormat("HH24")],
             ["{now_min}", Amana.TimeFormat("MI")],
             ["{now_UTCms}", Date.now()],

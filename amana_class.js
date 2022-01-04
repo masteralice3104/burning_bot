@@ -53,6 +53,9 @@ class Amana extends Amana_minimum {
         //他のサーバーに書き込むこっそり機能
         this.otherServer = 0;
 
+        //メッセージをここに溜め込む
+        this.message_stack = "";
+
     }
 
 
@@ -219,6 +222,12 @@ class Amana extends Amana_minimum {
         return Exist_Array;
     }
 
+
+    //message_stacksを送る
+    message_stack_send() {
+        this.message_send(this.message_stack);
+    }
+
     //コマンド動かす！
     OtherCommand_Run(number) {
         if ("timestart" in this.OtherCommand[number]) {
@@ -231,7 +240,11 @@ class Amana extends Amana_minimum {
             let report_list = this.OtherCommand_Report(this.OtherCommand[number]["cond"])
             let send_a = report_list.join("　");
             this.OtherCommand_Type_message_send(number);
-            this.message_send(send_a);
+
+
+            //this.message_send(send_a);
+            this.message_stack = send_a;
+            this.message_stack_send();
 
         }
         if (this.OtherCommand[number]["type"].indexOf("message_random") != 0) {
@@ -258,14 +271,20 @@ class Amana extends Amana_minimum {
     OtherCommand_Type_message_send(number) {
         for (let i = 0; i < this.OtherCommand[number][`message_send`].length; i++) {
             let temp_com = this.OtherCommand_Replace(this.OtherCommand[number][`message_send`][i]);
-            this.message_send(temp_com);
+
+            //this.message_send(temp_com);
+            this.message_stack = temp_com;
+            this.message_stack_send();
         }
     }
     OtherCommand_Type_message_random(number, tweet = false) {
         let select = Amana.Random(this.OtherCommand[number][`message_random`].length);
         console.log(this.OtherCommand[number][`message_random`].length)
         let temp_com = this.OtherCommand_Replace(this.OtherCommand[number][`message_random`][select]);
-        this.message_send(temp_com);
+        //this.message_send(temp_com);
+        this.message_stack = temp_com;
+        this.message_stack_send();
+
 
         if (tweet == true) {
             this.tweetPost(temp_com);

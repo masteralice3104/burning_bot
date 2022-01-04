@@ -307,6 +307,11 @@ client.on('messageCreate', message => {
         Exist_Array = Amana_data.OtherCommand_Exist(instr);
         for (let i = 0; i < Exist_Array.length; i++) {
             Amana_data.OtherCommand_Run(Exist_Array[i]);
+
+            if (Amana_data.message_stack != "") {
+                Amana_data.message_send(Amana_data.message_stack);
+                Amana_data.message_stack = "";
+            }
             console.log(Exist_Array[i]);
         }
     }

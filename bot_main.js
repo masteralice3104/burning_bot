@@ -128,6 +128,10 @@ client.on('interactionCreate', async interaction => {
         if (interaction.options.getSubCommand() === 'namedel') {
             await interaction.reply(Amana_func.name_table_change(Amana_data, "delete", "nothing", author_name));
         }
+        if (interaction.options.getSubCommand() === 'commandload') {
+            Amana_data.ServerCommandLoad();
+            await interaction.reply("コマンド再読み込みを行ったよ！");
+        }
 
     }
 

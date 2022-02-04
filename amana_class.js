@@ -430,7 +430,7 @@ class Amana extends Amana_minimum {
         this.ServerOtherCommandLoad();
         this.OtherCommand_DataLoad();
 
-        this.ServerCommandLoad();
+        //this.ServerCommandLoad();//これをあんまり送りすぎるとエラーを吐き始めるよ
     }
 
     //サーバー設定関係
@@ -501,12 +501,19 @@ class Amana extends Amana_minimum {
                     subcommand
                     .setName('version')
                     .setDescription('バージョンを確認するよ！')
+                )
+                .addSubcommand(subcommand =>
+                    subcommand
+                    .setName('commandload')
+                    .setDescription('コマンド再読み込みをするよ！')
+
                 ),
 
 
                 new SlashCommandBuilder()
                 .setName(`hayate_perfect`)
-                .setDescription('久川颯「パーフェクト！」')
+                .setDescription('久川颯「パーフェクト！」'),
+
             ]
             .map(command => command.toJSON());
 

@@ -226,6 +226,7 @@ class Amana extends Amana_minimum {
     //message_stacksを送る
     message_stack_send() {
         this.message_send(this.message_stack);
+        this.message_stack = "";
     }
 
     //コマンド動かす！
@@ -245,6 +246,7 @@ class Amana extends Amana_minimum {
             //this.message_send(send_a);
             this.message_stack = send_a;
             this.message_stack_send();
+
 
         }
         if (this.OtherCommand[number]["type"].indexOf("message_random") != 0) {
@@ -267,6 +269,8 @@ class Amana extends Amana_minimum {
             console.log(`${number}:add`);
             this.OtherCommand_Add(this.OtherCommand[number]["add"]);
         }
+
+
     }
     OtherCommand_Type_message_send(number) {
         for (let i = 0; i < this.OtherCommand[number][`message_send`].length; i++) {

@@ -246,13 +246,14 @@ client.on('messageCreate', message => {
                     //あってた
                     Amana_data.message_send(`甜花「なーちゃんよろしく！」`);
                     Amana_data.id = input_serverid;
+
                     Amana_data.otherServer = 1;
                     instr.shift();
                     instr.shift();
                     instr.shift();
                     instr.shift();
 
-                    Amana_data.ServerInit();
+                    Amana_data.ServerInit(client, guildid, chid);
                 } else {
                     //間違ってた
                     Amana_data.message_send(`プロデューサーさん！`);
